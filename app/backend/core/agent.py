@@ -26,7 +26,7 @@ class BaseAgent:
         self.system_instruction = f"You are {self.name}, acting as the {self.role}. Your mission is to assist in creating hyper-personalized sales outreach."
         self.executor = ThreadPoolExecutor(max_workers=5)
 
-    async def chat(self, prompt: str, context: Optional[str] = None) -> str:
+    async def chat(self, prompt: str, context: Optional[str] = None, tools: Optional[List[Any]] = None) -> str:
         """Async chat interface — runs modern SDK Gemini call in a thread pool."""
         full_prompt = prompt
         if context:
@@ -39,7 +39,8 @@ class BaseAgent:
                 model=self.model_name,
                 contents=full_prompt,
                 config=types.GenerateContentConfig(
-                    system_instruction=self.system_instruction
+                    system_instruction=self.system_instruction,
+                    tools=tools
                 )
             )
 
