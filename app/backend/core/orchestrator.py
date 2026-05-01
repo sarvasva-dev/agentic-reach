@@ -127,40 +127,47 @@ class SalesPodOrchestrator:
         }
 
     async def _run_live(self, prospect_name: str, company: str):
-        """Full live agentic pipeline."""
-        self.log("System", f"Starting mission for {prospect_name} at {company}...")
-        yield {"type": "log", "agent": "System", "message": f"Starting mission for {prospect_name} at {company}..."}
+        """Full live agentic pipeline with error handling."""
+        try:
+            self.log("System", f"Starting mission for {prospect_name} at {company}...")
+            yield {"type": "log", "agent": "System", "message": f"Starting mission for {prospect_name} at {company}..."}
 
-        self.log("Scout", "Deep searching for business triggers...")
-        yield {"type": "log", "agent": "Scout", "message": "Deep searching for business triggers via Google Search Grounding..."}
-        research_report = await self.scout.research(prospect_name, company)
-        yield {"type": "log", "agent": "Scout", "message": "Research complete. Analysis synthesized."}
+            self.log("Scout", "Deep searching for business triggers...")
+            yield {"type": "log", "agent": "Scout", "message": "Deep searching for business triggers via Google Search Grounding..."}
+            research_report = await self.scout.research(prospect_name, company)
+            yield {"type": "log", "agent": "Scout", "message": "Research complete. Analysis synthesized."}
 
-        self.log("Psychologist", "Analyzing personality shadow...")
-        yield {"type": "log", "agent": "Psychologist", "message": "Analyzing behavioral patterns and personality DISC profile..."}
-        strategy = await self.psychologist.analyze_personality(research_report)
-        yield {"type": "log", "agent": "Psychologist", "message": "Strategy defined. Tone adjusted for prospect personality."}
+            self.log("Psychologist", "Analyzing personality shadow...")
+            yield {"type": "log", "agent": "Psychologist", "message": "Analyzing behavioral patterns and personality DISC profile..."}
+            strategy = await self.psychologist.analyze_personality(research_report)
+            yield {"type": "log", "agent": "Psychologist", "message": "Strategy defined. Tone adjusted for prospect personality."}
 
-        self.log("Scribe", "Drafting initial outreach...")
-        yield {"type": "log", "agent": "Scribe", "message": "Drafting initial outreach message..."}
-        draft = await self.scribe.draft(research_report, strategy)
-        yield {"type": "log", "agent": "Scribe", "message": "Initial draft ready. Submitting for adversarial review."}
+            self.log("Scribe", "Drafting initial outreach...")
+            yield {"type": "log", "agent": "Scribe", "message": "Drafting initial outreach message..."}
+            draft = await self.scribe.draft(research_report, strategy)
+            yield {"type": "log", "agent": "Scribe", "message": "Initial draft ready. Submitting for adversarial review."}
 
-        self.log("Mirror", "Critiquing draft as the prospect...")
-        yield {"type": "log", "agent": "Mirror", "message": "Entering Mirror mode. Simulating cynical prospect reaction..."}
-        critique = await self.mirror.critique(draft, strategy)
-        yield {"type": "log", "agent": "Mirror", "message": "Critique finished. Sending corrections back to Scribe."}
+            self.log("Mirror", "Critiquing draft as the prospect...")
+            yield {"type": "log", "agent": "Mirror", "message": "Entering Mirror mode. Simulating cynical prospect reaction..."}
+            critique = await self.mirror.critique(draft, strategy)
+            yield {"type": "log", "agent": "Mirror", "message": "Critique finished. Sending corrections back to Scribe."}
 
-        self.log("Scribe", "Applying corrections for final version...")
-        yield {"type": "log", "agent": "Scribe", "message": "Self-correcting based on Mirror feedback..."}
-        final_version = await self.scribe.draft(research_report, strategy, feedback=critique)
-        yield {"type": "log", "agent": "Scribe", "message": "Mission accomplished. Final version optimized."}
+            self.log("Scribe", "Applying corrections for final version...")
+            yield {"type": "log", "agent": "Scribe", "message": "Self-correcting based on Mirror feedback..."}
+            final_version = await self.scribe.draft(research_report, strategy, feedback=critique)
+            yield {"type": "log", "agent": "Scribe", "message": "Mission accomplished. Final version optimized."}
 
-        yield {
-            "type": "result",
-            "research": research_report,
-            "strategy": strategy,
-            "initial_draft": draft,
-            "critique": critique,
-            "final_version": final_version
-        }
+            yield {
+                "type": "result",
+                "research": research_report,
+                "strategy": strategy,
+                "initial_draft": draft,
+                "critique": critique,
+                "final_version": final_version
+            }
+        except Exception as e:
+            error_msg = str(e)
+            if "429" in error_msg or "Quota" in error_msg:
+                error_msg = "API Quota Exceeded. Please wait 60 seconds or switch to a different API Key."
+            self.log("Error", f"Mission failed: {error_msg}")
+            yield {"type": "log", "agent": "Error", "message": f"Mission failed: {error_msg}"}

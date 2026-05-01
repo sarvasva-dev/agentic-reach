@@ -6,7 +6,7 @@ class ScoutAgent(BaseAgent):
         super().__init__(
             name="Scout", 
             role="Intelligence Researcher", 
-            model_name="gemini-2.5-flash" 
+            model_name="gemini-2.0-flash" 
         )
 
     async def research(self, prospect_name: str, company: str) -> str:

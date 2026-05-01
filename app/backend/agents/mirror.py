@@ -5,7 +5,7 @@ class MirrorAgent(BaseAgent):
         super().__init__(
             name="Mirror",
             role="Adversarial Critique Specialist",
-            model_name="gemini-2.0-flash"
+            model_name="gemini-1.5-flash"
         )
 
     async def critique(self, initial_draft: str, strategy: str) -> str:

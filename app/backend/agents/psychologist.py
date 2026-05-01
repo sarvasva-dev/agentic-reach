@@ -5,7 +5,7 @@ class PsychologistAgent(BaseAgent):
         super().__init__(
             name="Psychologist",
             role="Persuasion & Stylometric Analyst",
-            model_name="gemini-2.0-flash"
+            model_name="gemini-1.5-flash"
         )
 
     async def analyze_personality(self, research_report: str) -> str:
