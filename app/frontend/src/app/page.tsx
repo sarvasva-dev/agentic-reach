@@ -61,7 +61,7 @@ export default function Home() {
         }
       }
     } catch (err) {
-      setLogs(prev => [...prev, { agent: "Error", message: "Could not connect to Agentic-Reach backend. Ensure it is running at localhost:8000." }]);
+      setLogs(prev => [...prev, { agent: "Error", message: `Connection to backend failed. Please verify the API is online at ${process.env.NEXT_PUBLIC_API_URL || "localhost:8000"}.` }]);
     } finally {
       setIsRunning(false);
     }
