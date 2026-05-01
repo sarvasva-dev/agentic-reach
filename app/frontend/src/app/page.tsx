@@ -28,7 +28,7 @@ export default function Home() {
     setResult(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://agentic-reach.onrender.com";
       const response = await fetch(`${apiUrl}/run-mission`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
