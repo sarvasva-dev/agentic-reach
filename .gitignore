@@ -1,13 +1,33 @@
-# GSD State Files
-.gsd/ARCHITECTURE.md
-.gsd/DECISIONS.md
-.gsd/JOURNAL.md
-.gsd/ROADMAP.md
-.gsd/SPEC.md
-.gsd/STACK.md
-.gsd/STATE.md
-.gsd/TODO.md
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
 
-# OS generated
-Thumbs.db
+# Environment — NEVER commit real keys
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Next.js
+app/frontend/.next/
+app/frontend/node_modules/
+app/frontend/out/
+
+# Misc
 .DS_Store
+*.log
+*.tmp
+list_models.py
