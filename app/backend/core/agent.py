@@ -1,8 +1,10 @@
 import os
 import asyncio
 from typing import List, Dict, Any, Optional
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
+from concurrent.futures import ThreadPoolExecutor
 
 load_dotenv()
 
@@ -20,21 +22,28 @@ class BaseAgent:
         if not api_key:
             raise ValueError(f"Agent {name} needs GOOGLE_API_KEY")
             
-        genai.configure(api_key=api_key)
-        
-        self.model = genai.GenerativeModel(
-            model_name=self.model_name,
-            system_instruction=f"You are {self.name}, acting as the {self.role}. Your mission is to assist in creating hyper-personalized sales outreach."
-        )
+        self.client = genai.Client(api_key=api_key)
+        self.system_instruction = f"You are {self.name}, acting as the {self.role}. Your mission is to assist in creating hyper-personalized sales outreach."
+        self.executor = ThreadPoolExecutor(max_workers=5)
 
     async def chat(self, prompt: str, context: Optional[str] = None) -> str:
-        """Async chat interface — runs sync Gemini call in a thread pool."""
+        """Async chat interface — runs modern SDK Gemini call in a thread pool."""
         full_prompt = prompt
         if context:
             full_prompt = f"Context: {context}\n\nTask: {prompt}"
             
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(None, self.model.generate_content, full_prompt)
+        
+        def call_gemini():
+            return self.client.models.generate_content(
+                model=self.model_name,
+                contents=full_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=self.system_instruction
+                )
+            )
+
+        response = await loop.run_in_executor(self.executor, call_gemini)
         return response.text
 
     def __repr__(self):

@@ -143,18 +143,17 @@ class SalesPodOrchestrator:
 
         self.log("Scribe", "Drafting initial outreach...")
         yield {"type": "log", "agent": "Scribe", "message": "Drafting initial outreach message..."}
-        draft = await self.scribe.draft_outreach(research_report, strategy)
+        draft = await self.scribe.draft(research_report, strategy)
         yield {"type": "log", "agent": "Scribe", "message": "Initial draft ready. Submitting for adversarial review."}
 
         self.log("Mirror", "Critiquing draft as the prospect...")
         yield {"type": "log", "agent": "Mirror", "message": "Entering Mirror mode. Simulating cynical prospect reaction..."}
-        critique_result = await self.mirror.critique(draft, research_report)
-        critique = critique_result["response"]
+        critique = await self.mirror.critique(draft, strategy)
         yield {"type": "log", "agent": "Mirror", "message": "Critique finished. Sending corrections back to Scribe."}
 
         self.log("Scribe", "Applying corrections for final version...")
         yield {"type": "log", "agent": "Scribe", "message": "Self-correcting based on Mirror feedback..."}
-        final_version = await self.scribe.rewrite(draft, critique)
+        final_version = await self.scribe.draft(research_report, strategy, feedback=critique)
         yield {"type": "log", "agent": "Scribe", "message": "Mission accomplished. Final version optimized."}
 
         yield {

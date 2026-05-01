@@ -4,20 +4,25 @@ class ScribeAgent(BaseAgent):
     def __init__(self):
         super().__init__(
             name="Scribe", 
-            role="Expert Sales Copywriter", 
+            role="Expert Copywriter", 
             model_name="gemini-2.5-flash"
         )
 
-    async def draft_outreach(self, context: str, strategy: str) -> str:
-        prompt = (
-            f"BUSINESS CONTEXT: {context}\n"
-            f"PERSUASION STRATEGY: {strategy}\n\n"
-            "TASK: Draft a hyper-personalized LinkedIn outreach message. "
-            "It must feel human, non-spammy, and demonstrate deep research. "
-            "Use a specific 'Hook' from the context. Keep it under 150 words."
-        )
-        response = await self.chat(prompt)
-        return response
+    async def draft(self, research: str, strategy: str, feedback: str = None) -> str:
+        prompt = f"""
+        Write a hyper-personalized sales outreach email.
+        
+        RESEARCH: {research}
+        STRATEGY: {strategy}
+        {f'FEEDBACK TO INCORPORATE: {feedback}' if feedback else ''}
+        
+        Rules:
+        - No generic 'I hope this finds you well'.
+        - Use the business triggers from research.
+        - Match the DISC profile from strategy.
+        - Keep it under 100 words.
+        """
+        return await self.chat(prompt)
 
     async def rewrite(self, previous_draft: str, critique: str) -> str:
         prompt = (
